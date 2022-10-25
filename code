@@ -1,0 +1,80 @@
+using System;
+
+//  Задание какое-то 2
+namespace Laba4
+{
+    class ChangeEventArgs : EventArgs
+    {
+        string str;
+        public string Str
+        {
+            get
+            {
+                return str;
+            }
+        }
+        string otpr;
+        public string Otpravlenie
+        {
+            get
+            {
+                return otpr;
+            }
+        }
+        string dest;
+        public string Destination
+        {
+            get
+            {
+                return dest;
+            }
+        }
+        public ChangeEventArgs(string str, string otpr, string dest)
+        {
+            this.str = str;
+            this.otpr = otpr;
+            this.dest = dest;
+        }
+    }
+    class GenEvent
+    {
+        public delegate void ChangeEventHandler
+            (object source, ChangeEventArgs e);
+
+        public event ChangeEventHandler OnChangeHandler;
+
+        public void UpdateEvent(string str, string otpr, string dest)
+        {
+            ChangeEventArgs e =
+            new ChangeEventArgs(str, otpr, dest);
+
+            if (OnChangeHandler != null)
+                OnChangeHandler(this, e);
+        }
+
+    }
+    class RecEvent
+    {
+        void OnRecChange(object source, ChangeEventArgs e)
+        {
+            Console.WriteLine("Поезд '{0:S}' отправляется из {1:S} в {2:S} через каое-то неопределенное время!", e.Str, e.Otpravlenie, e.Destination);
+        }
+
+        public RecEvent(GenEvent gnEvent)
+        {
+            gnEvent.OnChangeHandler += new GenEvent.ChangeEventHandler(OnRecChange);
+        }
+    }
+    class Program
+    {
+        [STAThread]
+        static void Main(string[] args)
+        {
+
+            GenEvent gnEvent = new GenEvent();
+            RecEvent inventoryWatch = new RecEvent(gnEvent);
+            gnEvent.UpdateEvent("привет", "Москва", "Kazan");
+            gnEvent.UpdateEvent("ПОБЕДА1", "Казань", "Moscow");
+        }
+    }
+}
